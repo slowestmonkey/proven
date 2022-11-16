@@ -1,14 +1,22 @@
 package main
 
 import (
-	profileRepository "proven/adapters/profile"
+	profileRepository "proven/adapters/database/profile"
+	profileHttp "proven/adapters/http/profile"
 	profile "proven/core/profile"
+
+	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 )
 
 func main() {
-	var connection string
+	e := echo.New()
 
-	profileRepo := profileRepository.NewProfileRepository(connection)
+	e.Use(middleware.Logger())
+
+	profileRepo := profileRepository.NewProfileRepository("")
 	profileService := profile.NewProfileService(profileRepo)
+	profileHttp.NewProfileHandler(e, profileService)
 
+	e.Logger.Fatal(e.Start(":3000"))
 }
