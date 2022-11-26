@@ -3,11 +3,7 @@ package profile
 import (
 	"proven/core/account"
 	"time"
-
-	"github.com/google/uuid"
 )
-
-type ProfileID uuid.UUID
 
 type Email string // TODO replace with struct{ email string, confirmed boolean }
 
@@ -20,7 +16,7 @@ type PhoneNumber string
 type HashedPassword string
 
 type Profile struct {
-	ID               ProfileID      `json:"id"`
+	ID               string         `json:"id"`
 	FirstName        string         `json:"firstName"`
 	LastName         string         `json:"lastName"`
 	Email            Email          `json:"email"`
@@ -29,9 +25,9 @@ type Profile struct {
 	BirthDate        time.Time      `json:"birthDate"`
 	BirthCountry     Country        `json:"birthCountry"`
 	ResidenceCountry Country        `json:"residenceCountry"`
-	Password         HashedPassword `json:"hashedPassword"`
+	Password         HashedPassword `json:"password"`
 	Account          account.Account
 	CreatedAt        time.Time `json:"createdAt"`
 	UpdatedAt        time.Time `json:"updatedAt"`
-	ArchivedAt       time.Time `json:"ArchivedAt"`
+	ArchivedAt       time.Time `json:"archivedAt"`
 }

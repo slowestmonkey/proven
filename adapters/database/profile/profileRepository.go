@@ -1,44 +1,54 @@
 package profilerepo
 
 import (
-	"proven/core/account"
+	"database/sql"
 	profile "proven/core/profile"
-
-	"github.com/google/uuid"
 )
 
 type ProfileRepository struct {
-	connection string
+	db *sql.DB
 }
 
-func NewProfileRepository(connection string) profile.ProfileRepository {
-	return &ProfileRepository{connection}
+func NewProfileRepository(db *sql.DB) profile.ProfileRepository {
+	return &ProfileRepository{db}
 }
 
-func (p *ProfileRepository) Create(input profile.Profile) (profile.Profile, error) {
-	return profile.Profile{
-		ID:               profile.ProfileID(uuid.New()),
-		FirstName:        input.FirstName,
-		LastName:         input.LastName,
-		Email:            profile.Email(input.Email),
-		PhoneNumber:      profile.PhoneNumber(input.PhoneNumber),
-		Citizenship:      profile.Citizenship(input.Citizenship),
-		BirthDate:        input.BirthDate,
-		BirthCountry:     profile.Country(input.BirthCountry),
-		ResidenceCountry: profile.Country(input.ResidenceCountry),
-		Password:         input.Password,
-		Account:          account.Account{},
-	}, nil
+func (p *ProfileRepository) Store(input profile.Profile) (profile.Profile, error) {
+	query := `
+		INSERT INTO profile (first_name, last_name, email, phone_number, citizenship, birth_date, birth_country, residence_country, password)
+		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+		RETURNING id, created_at
+	`
+
+	err := p.db.QueryRow(query,
+		input.FirstName,
+		input.LastName,
+		input.Email,
+		input.PhoneNumber,
+		input.Citizenship,
+		input.BirthDate,
+		input.BirthCountry,
+		input.ResidenceCountry,
+		input.Password,
+	).Scan(
+		&input.ID,
+		&input.CreatedAt,
+	)
+
+	if err != nil {
+		return profile.Profile{}, err
+	}
+	return input, nil
 }
 
-func (p *ProfileRepository) Get(id profile.ProfileID) (profile.Profile, error) {
+func (p *ProfileRepository) Get(id string) (profile.Profile, error) {
 	return profile.Profile{}, nil
 }
 
-func (p *ProfileRepository) Update(id profile.ProfileID, input profile.Profile) (profile.Profile, error) {
+func (p *ProfileRepository) Update(id string, input profile.Profile) (profile.Profile, error) {
 	return profile.Profile{}, nil
 }
 
-func (p *ProfileRepository) Delete(id profile.ProfileID) error {
+func (p *ProfileRepository) Delete(id string) error {
 	return nil
 }

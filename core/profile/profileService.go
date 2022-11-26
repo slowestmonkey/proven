@@ -4,15 +4,15 @@ type ProfileService struct {
 	profileRepository ProfileRepository
 }
 
-func NewProfileService(profileRepository ProfileRepository) ProfileService {
-	return ProfileService{profileRepository}
+func NewProfileService(profileRepository ProfileRepository) *ProfileService {
+	return &ProfileService{profileRepository}
 }
 
-func (p *ProfileService) Create(input Profile) (Profile, error) {
+func (p *ProfileService) Store(input Profile) (Profile, error) {
 	// TODO: hash password
-	return p.profileRepository.Create(input)
+	return p.profileRepository.Store(input)
 }
 
-func (p *ProfileService) Get(id ProfileID) (Profile, error) {
+func (p *ProfileService) Get(id string) (Profile, error) {
 	return p.profileRepository.Get(id)
 }

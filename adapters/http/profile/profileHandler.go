@@ -5,15 +5,14 @@ import (
 	profile "proven/core/profile"
 
 	"github.com/go-playground/validator/v10"
-	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 )
 
 type ProfileHandler struct {
-	service profile.ProfileService
+	service *profile.ProfileService
 }
 
-func NewProfileHandler(e *echo.Echo, service profile.ProfileService) {
+func NewProfileHandler(e *echo.Echo, service *profile.ProfileService) {
 	handler := ProfileHandler{service}
 
 	e.GET("/profiles/:id", handler.Fetch)
@@ -34,7 +33,7 @@ func (p *ProfileHandler) Store(ctx echo.Context) error {
 	}
 
 	// context := ctx.Request().Context()
-	profile, err := p.service.Create(input)
+	profile, err := p.service.Store(input)
 
 	if err != nil {
 		// TODO: should check the domain error
@@ -55,13 +54,7 @@ func isProfileCreateInputValid(m profile.Profile) (bool, error) {
 }
 
 func (p *ProfileHandler) Fetch(ctx echo.Context) error {
-	id, err := uuid.Parse(ctx.Param("id"))
-
-	if err != nil {
-		return ctx.JSON(http.StatusBadRequest, err.Error())
-	}
-
-	profile, err := p.service.Get(profile.ProfileID(id))
+	profile, err := p.service.Get(ctx.Param("id"))
 
 	if err != nil {
 		return ctx.JSON(http.StatusInternalServerError, err.Error())
