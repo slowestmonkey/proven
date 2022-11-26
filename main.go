@@ -2,8 +2,6 @@ package main
 
 import (
 	"database/sql"
-	"fmt"
-	"log"
 	profileRepository "proven/adapters/database/profile"
 	profileHttp "proven/adapters/http/profile"
 	profile "proven/core/profile"
@@ -28,11 +26,10 @@ func main() {
 	e.Use(middleware.Logger())
 
 	connection := viper.GetString(`database.connection`)
-	fmt.Println(connection)
 	db, err := sql.Open("postgres", connection)
 
 	if err != nil {
-		log.Fatal(err)
+		panic(err)
 	}
 
 	profileRepo := profileRepository.NewProfileRepository(db)

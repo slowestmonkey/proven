@@ -1,5 +1,7 @@
 package profile
 
+import "golang.org/x/crypto/bcrypt"
+
 type ProfileService struct {
 	profileRepository ProfileRepository
 }
@@ -9,8 +11,21 @@ func NewProfileService(profileRepository ProfileRepository) *ProfileService {
 }
 
 func (p *ProfileService) Store(input Profile) (Profile, error) {
-	// TODO: hash password
+	hashedPassword, err := hashPassword(string(input.Password))
+
+	if err != nil {
+		return Profile{}, err
+	}
+
+	input.Password = hashedPassword
+
 	return p.profileRepository.Store(input)
+}
+
+func hashPassword(password string) (HashedPassword, error) {
+	bytes, err := bcrypt.GenerateFromPassword([]byte(password), 10)
+
+	return HashedPassword(string(bytes)), err
 }
 
 func (p *ProfileService) Get(id string) (Profile, error) {
