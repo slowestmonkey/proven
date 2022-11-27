@@ -1,0 +1,6 @@
+{
+  "restartable": "rs",
+  "ignore": [".git"],
+  "verbose": true,
+  "ext": "go,json"
+}
