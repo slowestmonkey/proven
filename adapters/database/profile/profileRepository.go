@@ -15,8 +15,8 @@ func NewProfileRepository(db *sql.DB) profile.ProfileRepository {
 
 func (p *ProfileRepository) Store(input profile.Profile) (profile.Profile, error) {
 	query := `
-		INSERT INTO profile (first_name, last_name, email, phone_number, citizenship, birth_date, birth_country, residence_country, password)
-		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+		INSERT INTO profile (first_name, last_name, email, phone_number, citizenship, birth_date, birth_country, residence_country, password, updated_at, archived_at)
+		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
 		RETURNING id, created_at
 	`
 
@@ -30,6 +30,8 @@ func (p *ProfileRepository) Store(input profile.Profile) (profile.Profile, error
 		input.BirthCountry,
 		input.ResidenceCountry,
 		input.Password,
+		input.UpdatedAt,
+		input.ArchivedAt,
 	).Scan(
 		&input.ID,
 		&input.CreatedAt,
@@ -42,7 +44,31 @@ func (p *ProfileRepository) Store(input profile.Profile) (profile.Profile, error
 }
 
 func (p *ProfileRepository) Get(id string) (profile.Profile, error) {
-	return profile.Profile{}, nil
+	query := `SELECT * FROM profile WHERE id = $1`
+
+	var result profile.Profile
+
+	err := p.db.QueryRow(query, id).Scan(
+		&result.ID,
+		&result.FirstName,
+		&result.LastName,
+		&result.Email,
+		&result.PhoneNumber,
+		&result.Citizenship,
+		&result.BirthDate,
+		&result.BirthCountry,
+		&result.ResidenceCountry,
+		&result.Password,
+		&result.CreatedAt,
+		&result.UpdatedAt,
+		&result.ArchivedAt,
+	)
+
+	if err != nil {
+		return profile.Profile{}, err
+	}
+
+	return result, nil
 }
 
 func (p *ProfileRepository) Update(id string, input profile.Profile) (profile.Profile, error) {

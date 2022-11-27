@@ -25,9 +25,9 @@ type Profile struct {
 	BirthDate        time.Time      `json:"birthDate"`
 	BirthCountry     Country        `json:"birthCountry"`
 	ResidenceCountry Country        `json:"residenceCountry"`
-	Password         HashedPassword `json:"password"`
+	Password         HashedPassword `json:"-"`
 	Account          account.Account
 	CreatedAt        time.Time `json:"createdAt"`
-	UpdatedAt        time.Time `json:"updatedAt"`
-	ArchivedAt       time.Time `json:"archivedAt"`
+	UpdatedAt        time.Time `json:"-"`
+	ArchivedAt       time.Time `json:"-"`
 }
