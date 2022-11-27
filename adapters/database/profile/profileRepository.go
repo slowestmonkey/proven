@@ -2,6 +2,7 @@ package profilerepo
 
 import (
 	"database/sql"
+	domainerr "proven/core/error"
 	profile "proven/core/profile"
 )
 
@@ -38,7 +39,7 @@ func (p *ProfileRepository) Store(input profile.Profile) (profile.Profile, error
 	)
 
 	if err != nil {
-		return profile.Profile{}, err
+		return profile.Profile{}, domainerr.ErrInternalServerError
 	}
 	return input, nil
 }
@@ -64,11 +65,14 @@ func (p *ProfileRepository) Get(id string) (profile.Profile, error) {
 		&result.ArchivedAt,
 	)
 
-	if err != nil {
-		return profile.Profile{}, err
+	switch err {
+	case nil:
+		return result, nil
+	case sql.ErrNoRows:
+		return profile.Profile{}, domainerr.ErrNotFound
+	default:
+		return profile.Profile{}, domainerr.ErrInternalServerError
 	}
-
-	return result, nil
 }
 
 func (p *ProfileRepository) Update(id string, input profile.Profile) (profile.Profile, error) {
