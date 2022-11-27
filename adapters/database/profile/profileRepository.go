@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	domainerr "proven/core/error"
 	profile "proven/core/profile"
+	"time"
 )
 
 type ProfileRepository struct {
@@ -75,10 +76,36 @@ func (p *ProfileRepository) Get(id string) (profile.Profile, error) {
 	}
 }
 
-func (p *ProfileRepository) Update(id string, input profile.Profile) (profile.Profile, error) {
-	return profile.Profile{}, nil
+func (p *ProfileRepository) Update(id string, input profile.Profile) error {
+	query := `
+		UPDATE profile SET first_name=$1, last_name=$2, phone_number=$3, citizenship=$4, residence_country=$5, updated_at=$6
+		WHERE id = $7
+	`
+
+	_, err := p.db.Exec(
+		query,
+		input.FirstName,
+		input.LastName,
+		input.PhoneNumber,
+		input.Citizenship,
+		input.ResidenceCountry,
+		time.Now(),
+		id,
+	)
+
+	if err != nil {
+		return domainerr.ErrInternalServerError
+	}
+	return nil
 }
 
-func (p *ProfileRepository) Delete(id string) error {
+func (p *ProfileRepository) Archive(id string) error {
+	query := `UPDATE profile SET archived_at=$1 WHERE id = $2`
+
+	_, err := p.db.Exec(query, time.Now(), id)
+
+	if err != nil {
+		return domainerr.ErrInternalServerError
+	}
 	return nil
 }

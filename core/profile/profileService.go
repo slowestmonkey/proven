@@ -31,3 +31,11 @@ func hashPassword(password string) (HashedPassword, error) {
 func (p *ProfileService) Get(id string) (Profile, error) {
 	return p.profileRepository.Get(id)
 }
+
+func (p *ProfileService) Update(id string, input Profile) error {
+	return p.profileRepository.Update(id, input)
+}
+
+func (p *ProfileService) Archive(id string) error {
+	return p.profileRepository.Archive(id)
+}
