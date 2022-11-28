@@ -9,11 +9,11 @@ import (
 )
 
 type ProfileHandler struct {
-	service *profile.ProfileService
+	useCase *profile.ProfileUseCase
 }
 
-func NewProfileHandler(e *echo.Echo, service *profile.ProfileService) {
-	handler := ProfileHandler{service}
+func NewProfileHandler(e *echo.Echo, useCase *profile.ProfileUseCase) {
+	handler := ProfileHandler{useCase}
 
 	e.GET("/profiles/:id", handler.Fetch)
 	e.POST("/profiles", handler.Store)
@@ -35,7 +35,7 @@ func (p *ProfileHandler) Store(ctx echo.Context) error {
 	}
 
 	// context := ctx.Request().Context()
-	profile, err := p.service.Store(input)
+	profile, err := p.useCase.Store(input)
 
 	if err != nil {
 		// TODO: should check the domain error
@@ -55,7 +55,7 @@ func isProfileInputValid(m profile.Profile) (bool, error) {
 }
 
 func (p *ProfileHandler) Fetch(ctx echo.Context) error {
-	profile, err := p.service.Get(ctx.Param("id"))
+	profile, err := p.useCase.Get(ctx.Param("id"))
 
 	if err != nil {
 		return ctx.JSON(http.StatusInternalServerError, err.Error())
@@ -76,7 +76,7 @@ func (p *ProfileHandler) Update(ctx echo.Context) error {
 		return ctx.JSON(http.StatusBadRequest, err.Error())
 	}
 
-	err = p.service.Update(ctx.Param("id"), input)
+	err = p.useCase.Update(ctx.Param("id"), input)
 
 	if err != nil {
 		// TODO: should check the domain error
@@ -86,7 +86,7 @@ func (p *ProfileHandler) Update(ctx echo.Context) error {
 }
 
 func (p *ProfileHandler) Archive(ctx echo.Context) error {
-	err := p.service.Archive(ctx.Param("id"))
+	err := p.useCase.Archive(ctx.Param("id"))
 
 	if err != nil {
 		// TODO: might be also 404

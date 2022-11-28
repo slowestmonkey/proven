@@ -33,8 +33,8 @@ func main() {
 	}
 
 	profileRepo := profileRepository.NewProfileRepository(db)
-	profileService := profile.NewProfileService(profileRepo)
-	profileHttp.NewProfileHandler(e, profileService)
+	profileUseCase := profile.New(profileRepo)
+	profileHttp.NewProfileHandler(e, profileUseCase)
 
 	e.Logger.Fatal(e.Start(":3000"))
 }
