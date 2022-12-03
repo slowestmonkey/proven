@@ -1,4 +1,4 @@
-package profilerepo
+package database
 
 import (
 	"database/sql"
@@ -84,11 +84,11 @@ func (p *ProfileRepository) Update(id string, input profile.Profile) error {
 
 	_, err := p.db.Exec(
 		query,
-		input.FirstName,
-		input.LastName,
-		input.PhoneNumber,
-		input.Citizenship,
-		input.ResidenceCountry,
+		&input.FirstName,
+		&input.LastName,
+		&input.PhoneNumber,
+		&input.Citizenship,
+		&input.ResidenceCountry,
 		time.Now(),
 		id,
 	)

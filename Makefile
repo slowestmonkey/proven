@@ -1,6 +1,9 @@
 run:
 	go run .
 
+test:
+	go test -v -cover ./...
+
 watch:
 	nodemon --exec go run . --signal SIGTERM
 

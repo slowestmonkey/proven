@@ -2,8 +2,8 @@ package main
 
 import (
 	"database/sql"
-	profileRepository "proven/adapters/database/profile"
-	profileHttp "proven/adapters/http/profile"
+	database "proven/adapters/database"
+	http "proven/adapters/http"
 	profile "proven/core/profile"
 
 	"github.com/labstack/echo/v4"
@@ -32,9 +32,9 @@ func main() {
 		panic(err)
 	}
 
-	profileRepo := profileRepository.NewProfileRepository(db)
+	profileRepo := database.NewProfileRepository(db)
 	profileUseCase := profile.New(profileRepo)
-	profileHttp.NewProfileHandler(e, profileUseCase)
+	http.NewProfileHandler(e, profileUseCase)
 
 	e.Logger.Fatal(e.Start(":3000"))
 }

@@ -1,4 +1,4 @@
-package profilehttp
+package http
 
 import (
 	"net/http"
