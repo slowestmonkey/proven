@@ -1,10 +1,10 @@
-package main
+package app
 
 import (
 	"database/sql"
 	database "proven/adapters/database"
 	http "proven/adapters/http"
-	profile "proven/core/profile"
+	profile "proven/internal/profile"
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
@@ -12,16 +12,7 @@ import (
 	"github.com/spf13/viper"
 )
 
-func init() {
-	viper.SetConfigFile(`config.json`)
-	err := viper.ReadInConfig()
-
-	if err != nil {
-		panic(err)
-	}
-}
-
-func main() {
+func Run() {
 	e := echo.New()
 	e.Use(middleware.Logger())
 
@@ -36,5 +27,5 @@ func main() {
 	profileUseCase := profile.New(profileRepo)
 	http.NewProfileHandler(e, profileUseCase)
 
-	e.Logger.Fatal(e.Start(":3000"))
+	e.Logger.Fatal(e.Start(viper.GetString(`server.address`)))
 }

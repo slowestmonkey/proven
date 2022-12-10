@@ -2,7 +2,7 @@ package http
 
 import (
 	"net/http"
-	profile "proven/core/profile"
+	profile "proven/internal/profile"
 
 	"github.com/go-playground/validator/v10"
 	"github.com/labstack/echo/v4"

@@ -1,7 +1,7 @@
 package profile
 
 import (
-	"proven/core/account"
+	"proven/internal/account"
 	"time"
 )
 

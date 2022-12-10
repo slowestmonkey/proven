@@ -2,8 +2,8 @@ package database
 
 import (
 	"database/sql"
-	domainerr "proven/core/error"
-	profile "proven/core/profile"
+	domainerr "proven/internal/error"
+	profile "proven/internal/profile"
 	"time"
 )
 

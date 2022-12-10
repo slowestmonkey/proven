@@ -3,7 +3,7 @@ package profile_test
 import (
 	"database/sql"
 	"os"
-	"proven/core/profile"
+	"proven/internal/profile"
 	"reflect"
 	"testing"
 	"time"
@@ -16,8 +16,8 @@ import (
 	"github.com/spf13/viper"
 )
 
-// fix relative paths
-// test password hashing
+// TODO: fix relative paths
+// TODO: test password hashing
 
 var (
 	db      *sql.DB
@@ -26,7 +26,7 @@ var (
 )
 
 func setup() {
-	viper.SetConfigFile("../../config.test.json")
+	viper.SetConfigFile("../../config/config.test.json")
 	err := viper.ReadInConfig()
 
 	if err != nil {

@@ -1,9 +1,6 @@
 {
   "server": {
-    "address": ":3000"
-  },
-  "context": {
-    "timeout": 2
+    "address": ":8080"
   },
   "database": {
     "connection": "postgres://localhost:5432/proven?sslmode=disable"
