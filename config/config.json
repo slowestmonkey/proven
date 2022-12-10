@@ -3,6 +3,6 @@
     "address": ":8080"
   },
   "database": {
-    "connection": "postgres://localhost:5432/proven?sslmode=disable"
+    "connection": "postgres://postgres:postgres@postgres:5432/proven?sslmode=disable"
   }
 }
