@@ -2,17 +2,18 @@ package http
 
 import (
 	"net/http"
-	profile "proven/internal/profile"
+	"proven/internal/entity"
+	"proven/internal/usecase"
 
 	"github.com/go-playground/validator/v10"
 	"github.com/labstack/echo/v4"
 )
 
 type ProfileHandler struct {
-	useCase *profile.ProfileUseCase
+	useCase *usecase.ProfileUseCase
 }
 
-func NewProfileHandler(e *echo.Echo, useCase *profile.ProfileUseCase) {
+func NewProfileHandler(e *echo.Echo, useCase *usecase.ProfileUseCase) {
 	handler := ProfileHandler{useCase}
 
 	e.GET("/profiles/:id", handler.Fetch)
@@ -22,7 +23,7 @@ func NewProfileHandler(e *echo.Echo, useCase *profile.ProfileUseCase) {
 }
 
 func (p *ProfileHandler) Store(ctx echo.Context) error {
-	var input profile.Profile
+	var input entity.Profile
 
 	err := ctx.Bind(&input)
 
@@ -44,7 +45,7 @@ func (p *ProfileHandler) Store(ctx echo.Context) error {
 	return ctx.JSON(http.StatusCreated, profile)
 }
 
-func isProfileInputValid(m profile.Profile) (bool, error) {
+func isProfileInputValid(m entity.Profile) (bool, error) {
 	validate := validator.New()
 	err := validate.Struct(m)
 
@@ -64,7 +65,7 @@ func (p *ProfileHandler) Fetch(ctx echo.Context) error {
 }
 
 func (p *ProfileHandler) Update(ctx echo.Context) error {
-	var input profile.Profile
+	var input entity.Profile
 
 	err := ctx.Bind(&input)
 

@@ -2,8 +2,7 @@ package database
 
 import (
 	"database/sql"
-	domainerr "proven/internal/error"
-	profile "proven/internal/profile"
+	entity "proven/internal/entity"
 	"time"
 )
 
@@ -11,11 +10,11 @@ type ProfileRepository struct {
 	db *sql.DB
 }
 
-func NewProfileRepository(db *sql.DB) profile.ProfileRepository {
+func NewProfileRepository(db *sql.DB) entity.ProfileRepository {
 	return &ProfileRepository{db}
 }
 
-func (p *ProfileRepository) Store(input profile.Profile) (profile.Profile, error) {
+func (p *ProfileRepository) Store(input entity.Profile) (entity.Profile, error) {
 	query := `
 		INSERT INTO profile (first_name, last_name, email, phone_number, citizenship, birth_date, birth_country, residence_country, password, updated_at, archived_at)
 		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
@@ -40,15 +39,15 @@ func (p *ProfileRepository) Store(input profile.Profile) (profile.Profile, error
 	)
 
 	if err != nil {
-		return profile.Profile{}, domainerr.ErrInternalServerError
+		return entity.Profile{}, entity.ErrInternalServerError
 	}
 	return input, nil
 }
 
-func (p *ProfileRepository) Get(id string) (profile.Profile, error) {
+func (p *ProfileRepository) Get(id string) (entity.Profile, error) {
 	query := `SELECT * FROM profile WHERE id = $1`
 
-	var result profile.Profile
+	var result entity.Profile
 
 	err := p.db.QueryRow(query, id).Scan(
 		&result.ID,
@@ -70,13 +69,13 @@ func (p *ProfileRepository) Get(id string) (profile.Profile, error) {
 	case nil:
 		return result, nil
 	case sql.ErrNoRows:
-		return profile.Profile{}, domainerr.ErrNotFound
+		return entity.Profile{}, entity.ErrNotFound
 	default:
-		return profile.Profile{}, domainerr.ErrInternalServerError
+		return entity.Profile{}, entity.ErrInternalServerError
 	}
 }
 
-func (p *ProfileRepository) Update(id string, input profile.Profile) error {
+func (p *ProfileRepository) Update(id string, input entity.Profile) error {
 	query := `
 		UPDATE profile SET first_name=$1, last_name=$2, phone_number=$3, citizenship=$4, residence_country=$5, updated_at=$6
 		WHERE id = $7
@@ -94,7 +93,7 @@ func (p *ProfileRepository) Update(id string, input profile.Profile) error {
 	)
 
 	if err != nil {
-		return domainerr.ErrInternalServerError
+		return entity.ErrInternalServerError
 	}
 	return nil
 }
@@ -105,7 +104,7 @@ func (p *ProfileRepository) Archive(id string) error {
 	_, err := p.db.Exec(query, time.Now(), id)
 
 	if err != nil {
-		return domainerr.ErrInternalServerError
+		return entity.ErrInternalServerError
 	}
 	return nil
 }

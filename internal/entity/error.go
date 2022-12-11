@@ -1,4 +1,4 @@
-package domainerr
+package entity
 
 import "errors"
 

@@ -2,9 +2,9 @@ package app
 
 import (
 	"database/sql"
-	database "proven/adapters/database"
-	http "proven/adapters/http"
-	profile "proven/internal/profile"
+	"proven/internal/adapters/database"
+	"proven/internal/adapters/http"
+	"proven/internal/usecase"
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
@@ -24,7 +24,7 @@ func Run() {
 	}
 
 	profileRepo := database.NewProfileRepository(db)
-	profileUseCase := profile.New(profileRepo)
+	profileUseCase := usecase.NewProfileUseCase(profileRepo)
 	http.NewProfileHandler(e, profileUseCase)
 
 	e.Logger.Fatal(e.Start(viper.GetString(`server.address`)))

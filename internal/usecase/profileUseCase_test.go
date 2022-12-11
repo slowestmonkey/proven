@@ -1,14 +1,15 @@
-package profile_test
+package usecase_test
 
 import (
 	"database/sql"
 	"os"
-	"proven/internal/profile"
 	"reflect"
 	"testing"
 	"time"
 
-	database "proven/adapters/database"
+	"proven/internal/adapters/database"
+	"proven/internal/entity"
+	"proven/internal/usecase"
 
 	"github.com/golang-migrate/migrate/v4"
 	_ "github.com/golang-migrate/migrate/v4/database/postgres"
@@ -20,9 +21,9 @@ import (
 // TODO: test password hashing
 
 var (
-	db      *sql.DB
-	useCase profile.ProfileUseCase
-	m       *migrate.Migrate
+	db *sql.DB
+	uc usecase.ProfileUseCase
+	m  *migrate.Migrate
 )
 
 func setup() {
@@ -41,7 +42,7 @@ func setup() {
 	}
 
 	m, err = migrate.New(
-		"file://../../db/migrations",
+		"file://../../migrations",
 		connection,
 	)
 
@@ -52,7 +53,7 @@ func setup() {
 	m.Up()
 
 	profileRepo := database.NewProfileRepository(db)
-	useCase = *profile.New(profileRepo)
+	uc = *usecase.NewProfileUseCase(profileRepo)
 }
 
 func shutdown() {
@@ -68,7 +69,7 @@ func TestMain(m *testing.M) {
 }
 
 func TestCreate(t *testing.T) {
-	input := profile.Profile{
+	input := entity.Profile{
 		FirstName:        "Jamie",
 		LastName:         "Foxx",
 		Email:            "jamie@foxx.com",
@@ -79,12 +80,12 @@ func TestCreate(t *testing.T) {
 		ResidenceCountry: "US",
 	}
 
-	stored, err := useCase.Store(input)
+	stored, err := uc.Store(input)
 	if err != nil {
 		t.Errorf(err.Error())
 	}
 
-	expected := profile.Profile{
+	expected := entity.Profile{
 		FirstName:        stored.FirstName,
 		LastName:         stored.LastName,
 		Email:            stored.Email,
@@ -100,16 +101,16 @@ func TestCreate(t *testing.T) {
 }
 
 func TestFetch(t *testing.T) {
-	input := profile.Profile{
+	input := entity.Profile{
 		Email: "jamie@foxx.com",
 	}
 
-	stored, err := useCase.Store(input)
+	stored, err := uc.Store(input)
 	if err != nil {
 		t.Errorf(err.Error())
 	}
 
-	fetched, err := useCase.Get(stored.ID)
+	fetched, err := uc.Get(stored.ID)
 	if err != nil {
 		t.Errorf(err.Error())
 	}
@@ -119,8 +120,8 @@ func TestFetch(t *testing.T) {
 	}
 }
 
-func TestUpdated(t *testing.T) {
-	stored, _ := useCase.Store(profile.Profile{
+func TestUpdate(t *testing.T) {
+	stored, _ := uc.Store(entity.Profile{
 		FirstName:        "Jamie",
 		LastName:         "Foxx",
 		Email:            "jamie@foxx.com",
@@ -130,7 +131,7 @@ func TestUpdated(t *testing.T) {
 		BirthCountry:     "US",
 		ResidenceCountry: "US",
 	})
-	input := profile.Profile{
+	input := entity.Profile{
 		FirstName:        "Hue",
 		LastName:         "Jackman",
 		PhoneNumber:      "1234567",
@@ -138,14 +139,14 @@ func TestUpdated(t *testing.T) {
 		ResidenceCountry: "AU",
 	}
 
-	err := useCase.Update(stored.ID, input)
+	err := uc.Update(stored.ID, input)
 	if err != nil {
 		t.Errorf(err.Error())
 	}
 
-	fetched, _ := useCase.Get(stored.ID)
+	fetched, _ := uc.Get(stored.ID)
 
-	expected := profile.Profile{
+	expected := entity.Profile{
 		FirstName:        fetched.FirstName,
 		LastName:         fetched.LastName,
 		PhoneNumber:      fetched.PhoneNumber,
@@ -158,21 +159,21 @@ func TestUpdated(t *testing.T) {
 }
 
 func TestArchive(t *testing.T) {
-	input := profile.Profile{
+	input := entity.Profile{
 		Email: "jamie@foxx.com",
 	}
 
-	stored, err := useCase.Store(input)
+	stored, err := uc.Store(input)
 	if err != nil {
 		t.Errorf(err.Error())
 	}
 
-	err = useCase.Archive(stored.ID)
+	err = uc.Archive(stored.ID)
 	if err != nil {
 		t.Errorf(err.Error())
 	}
 
-	archived, _ := useCase.Get(stored.ID)
+	archived, _ := uc.Get(stored.ID)
 	if archived.ArchivedAt.IsZero() {
 		t.Errorf("Cannot archive profile")
 	}

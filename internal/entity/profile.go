@@ -1,7 +1,6 @@
-package profile
+package entity
 
 import (
-	"proven/internal/account"
 	"time"
 )
 
@@ -26,8 +25,15 @@ type Profile struct {
 	BirthCountry     Country        `json:"birthCountry"`
 	ResidenceCountry Country        `json:"residenceCountry"`
 	Password         HashedPassword `json:"-"`
-	Account          account.Account
+	Account          Account
 	CreatedAt        time.Time `json:"createdAt"`
 	UpdatedAt        time.Time `json:"-"`
 	ArchivedAt       time.Time `json:"-"`
+}
+
+type ProfileRepository interface {
+	Store(input Profile) (Profile, error)
+	Get(id string) (Profile, error)
+	Update(id string, input Profile) error
+	Archive(id string) error
 }
