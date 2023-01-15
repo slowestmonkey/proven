@@ -19,6 +19,7 @@ import (
 
 // TODO: fix relative paths
 // TODO: test password hashing
+// TODO: migration should happen outside of tests
 
 var (
 	db *sql.DB
@@ -27,7 +28,7 @@ var (
 )
 
 func setup() {
-	viper.SetConfigFile("../../config/config.test.json")
+	viper.SetConfigFile("../../config/config.json")
 	err := viper.ReadInConfig()
 
 	if err != nil {
@@ -35,6 +36,7 @@ func setup() {
 	}
 
 	connection := viper.GetString(`database.connection`)
+
 	db, err = sql.Open("postgres", connection)
 
 	if err != nil {

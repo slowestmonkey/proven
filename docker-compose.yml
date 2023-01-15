@@ -2,16 +2,14 @@ version: '3'
 
 services:
   app:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    build: .
+    container_name: app
+    image: app
     ports:
       - "8080:8080"
     restart: unless-stopped
     depends_on:
       - postgres
-    networks:
-      - backend
 
   postgres:
     image: "postgres:15.1-alpine"
@@ -24,12 +22,15 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: proven
-    networks:
-      - backend
 
-networks:
-  backend:
-
+  integration:
+    build:
+      context: .
+      dockerfile: integrationTests/Dockerfile
+    container_name: integration
+    image: integration
+    depends_on:
+      - app
 
 volumes:
   pg-data:

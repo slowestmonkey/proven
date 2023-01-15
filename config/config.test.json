@@ -1,9 +1,0 @@
-{
-    "server": {
-      "address": ":8000"
-    },
-    "database": {
-      "connection": "postgres://localhost:5432/proven_test?sslmode=disable"
-    }
-  }
-  
